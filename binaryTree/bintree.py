@@ -1,6 +1,4 @@
-import timeit
 from collections import defaultdict
-import matplotlib.pyplot as plt
 
 
 class BinTree:
@@ -11,6 +9,30 @@ class BinTree:
     def __init__(self):
         """Создаёт объект BinTree (без параметров)."""
         pass
+
+    def get_left(self, root):
+        """
+        Возвращает значение левого потомка для узла.
+
+        Args:
+            root (int): значение текущего узла.
+
+        Returns:
+            int: левый потомок (root * 3).
+        """
+        return root * 3
+
+    def get_right(self, root):
+        """
+        Возвращает значение правого потомка для узла.
+
+        Args:
+            root (int): значение текущего узла.
+
+        Returns:
+            int: правый потомок (root + 4).
+        """
+        return root + 4
 
     def parser1(self, tree, indent=0):
         """
@@ -61,7 +83,7 @@ class BinTree:
         for d in sorted(levels.keys()):
             print(f"Level {d}: " + " ".join(map(str, levels[d])))
 
-    def _alg(self, height, root, left=lambda x: x * 3, right=lambda x: x + 4):
+    def _alg(self, height, root):
         """
         Рекурсивно строит дерево заданной высоты.
 
@@ -72,57 +94,15 @@ class BinTree:
         Returns:
             dict: дерево в виде вложенных словарей.
         """
-
         if height > 1:
-            return {root: [self._alg(height - 1, left(root)),
-                           self._alg(height - 1, right(root))]}
+            return {root: [self._alg(height - 1, self.get_left(root)),
+                           self._alg(height - 1, self.get_right(root))]}
         if height == 1:
-            return {root: [left(root), right(root)]}
+            return {root: [self.get_left(root), self.get_right(root)]}
         else:
             return {root}
 
-    def _alg_iter(self, height, root, left=lambda x: x * 3, right=lambda x: x + 4):
-        """
-        Итеративное построение структуры дерева в формате:
-        {root: [левое_поддерево, правое_поддерево]} / {root} / {root:[left_val, right_val]}
-        Точная эквивалентность поведению _alg из рекурсивной версии.
-        """
-        if height <= 0:
-            return {root}
-        if height == 1:
-            return {root: [left(root), right(root)]}
-        frames = [{'root': root, 'h': height, 'state': 0}]
-        built = []
-
-        while frames:
-            f = frames.pop()
-            r, h, state = f['root'], f['h'], f['state']
-
-            if h <= 0:
-                built.append({r})
-                continue
-
-            if h == 1:
-                built.append({r: [left(r), right(r)]})
-                continue
-
-            if state == 0:
-                f['state'] = 1
-                frames.append(f)
-                right_r = right(r)
-                left_r = left(r)
-                frames.append({'root': right_r, 'h': h - 1, 'state': 0})
-                frames.append({'root': left_r, 'h': h - 1, 'state': 0})
-
-            else:
-                right_sub = built.pop()
-                left_sub = built.pop()
-                built.append({r: [left_sub, right_sub]})
-        return built[-1]
-
-
-
-    def test(self, height, root, use_parser1=False, *, max_nodes=200_000, left=lambda x: x * 3, right=lambda x: x + 4):
+    def test(self, height, root, use_parser1=False, *, max_nodes=200_000):
         """
         Проверяет корректность параметров перед генерацией дерева.
 
@@ -147,8 +127,8 @@ class BinTree:
         if height < 1:
             raise ValueError("height должен быть ≥ 1")
         try:
-            l = left(root)
-            r = right(root)
+            l = self.get_left(root)
+            r = self.get_right(root)
         except Exception as e:
             raise ValueError(f"get_left/get_right упали на root={root}: {e}") from e
         if not (isinstance(l, int) and isinstance(r, int)):
@@ -161,49 +141,24 @@ class BinTree:
             )
         return True
 
-    def gen_bin_tree(self, height: int, root: int, use_parser1: bool = False, *, algo: str = "iter", left=lambda x: x * 3, right=lambda x: x + 4):
+    def gen_bin_tree(self, height, root, use_parser1: bool = False):
         """
         Генерация бинарного дерева и вывод его в консоль.
 
         Args:
             height (int): глубина дерева.
             root (int): корневое значение.
-            use_parser1 (bool): если True — вывод через parser1 (отступами);
+            use_parser1 (bool): если True, вывод через parser1 (отступами);
                                 иначе parser2 (уровнями).
-            algo (str): выбор алгоритма построения:
-                        "iter" — использовать _alg_iter (по умолчанию, итеративный, без рекурсии),
-                        "rec"  — использовать _alg (рекурсивный).
 
         Output:
             Печатает дерево в консоль в выбранном формате.
         """
         self.test(height, root, use_parser1)
-        if algo in ("iter", "i"):
-            builder = self._alg_iter
-        elif algo in ("rec", "r"):
-            builder = self._alg
-        else:
-            raise ValueError("Неверный параметр algo: ожидается 'iter' или 'rec'.")
-        res = builder(height - 1, root, left=left, right=right)
+        res = self._alg(height - 1, root)
         (self.parser1 if use_parser1 else self.parser2)(res)
 
 
 b = BinTree()
-# b.gen_bin_tree(4, 3)
-# print(timeit.timeit(stmt='b._alg(4, 3)', setup='b=BinTree()', number=1))
-# print(timeit.timeit(lambda: b._alg(6, 3), number=1000))
-# print(timeit.timeit(lambda: b._alg_iter(6, 3), number=1000))
-
-t1, t2 = [], []
-for i in range(10):
-    t1.append(timeit.timeit(lambda: b._alg(i, 3), number = 1))
-    t2.append(timeit.timeit(lambda: b._alg_iter(i, 3), number = 1))
-y = range(10)
-print(1)
-plt.plot(y, t1, label='Рекурсивный алгоритм')
-plt.plot(y, t2, label='Итеративный алгоритм')
-plt.xlabel("Высота дерева")
-plt.ylabel("Время выполнения")
-plt.legend()
-plt.show()
-# Вывод: рекурсивная функция является более эффектиной по сравнению с итеративной, изначально результаты мало рознятся, но в дальнейшем разница становится только больше
+b.gen_bin_tree(6, 2)
+b.gen_bin_tree(6, 2, use_parser1=True)  
