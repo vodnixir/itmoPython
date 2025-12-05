@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Валюты</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h2>Валюты</h2>
+
+<a href="/currency/add" class="btn">Добавить валюту</a>
+
+<table class="table">
+<tr>
+    <th>ID</th>
+    <th>NumCode</th>
+    <th>CharCode</th>
+    <th>Name</th>
+    <th>Value</th>
+    <th>Действия</th>
+</tr>
+
+{% for item in currencies %}
+<tr>
+    <td>{{ item.id }}</td>
+    <td>{{ item.num_code }}</td>
+    <td>{{ item.char_code }}</td>
+    <td>{{ item.name }}</td>
+    <td>{{ item.value }}</td>
+    <td>
+        <a href="/currency/delete?id={{ item.id }}" class="btn btn-danger">Удалить</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>

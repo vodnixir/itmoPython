@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователь {{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="section-card">
+    <h1>Пользователь: {{ user.name }}</h1>
+</div>
+
+<div class="section-card" style="margin-top: 16px;">
+    <h2>Подписки на валюты</h2>
+
+    {% if subscriptions %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Код</th>
+                <th>Название</th>
+                <th>Текущий курс</th>
+                <th>Номинал</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for c in subscriptions %}
+                <tr>
+                    <td>{{ c.char_code }}</td>
+                    <td>{{ c.name }}</td>
+                    <td>{{ "%.4f"|format(c.value) }}</td>
+                    <td>{{ c.nominal }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">Пользователь пока ни на какие валюты не подписан.</p>
+    {% endif %}
+</div>
+
+<div class="section-card" style="margin-top: 16px;">
+    <h2>Динамика курсов (последние 3 месяца)</h2>
+
+    {% if subscriptions %}
+        <div style="margin-top: 12px;">
+            <canvas id="userHistoryChart" height="120"></canvas>
+        </div>
+    {% else %}
+        <p class="muted">Нет подписок — нечего отображать на графике.</p>
+    {% endif %}
+</div>
+
+{% if subscriptions %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const historyData = {{ history_json | safe }};
+
+        const labels = ["3 мес. назад", "2 мес. назад", "1 мес. назад", "Сейчас"];
+
+        const datasets = historyData.map((item, idx) => ({
+            label: item.code,
+            data: item.values,
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: 3,
+        }));
+
+        const ctx = document.getElementById('userHistoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e5e7eb'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: '#111827' }
+                    },
+                    y: {
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: '#111827' }
+                    }
+                }
+            }
+        });
+    </script>
+{% endif %}
+{% endblock %}

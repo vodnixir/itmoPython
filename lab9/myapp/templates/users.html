@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="section-card">
+    <h1>Пользователи</h1>
+    <p class="muted">Выберите пользователя, чтобы посмотреть его подписки на валюты.</p>
+
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Действия</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>
+                    <a href="/user?id={{ user.id }}">подписки</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

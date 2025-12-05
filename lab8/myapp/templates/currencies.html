@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="section-card">
+    <h1>Текущие курсы валют</h1>
+    <p class="muted">Курсы получены с API ЦБ РФ при открытии страницы.</p>
+
+    <table class="table">
+        <tr>
+            <th>Код</th>
+            <th>Название</th>
+            <th>Курс</th>
+        </tr>
+        {% for c in currencies %}
+            <tr>
+                <td><span class="badge">{{ c.char_code }}</span></td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователь {{ user.name }}{% endblock %}
+
+{% block content %}
+<h1>Пользователь: {{ user.name }}</h1>
+
+<h2>Подписки на валюты</h2>
+
+{% if subscriptions %}
+    <ul>
+        {% for c in subscriptions %}
+            <li>
+                {{ c.char_code }} — {{ c.name }}:
+                {{ c.value }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Пользователь пока ни на какие валюты не подписан.</p>
+{% endif %}
+
+<hr>
+
+<h2>Динамика курсов (последние 3 месяца)</h2>
+
+<canvas id="currencyChart" width="600" height="300"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const histories = {{ histories_json | safe }};
+    const labels = ["3 месяца назад", "2 месяца назад", "1 месяц назад"];
+
+    const datasets = Object.keys(histories).map(code => ({
+        label: code,
+        data: histories[code],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.2
+    }));
+
+    const ctx = document.getElementById("currencyChart").getContext("2d");
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "top"
+                },
+                title: {
+                    display: true,
+                    text: "Динамика курсов валют"
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

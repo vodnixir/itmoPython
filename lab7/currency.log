@@ -1,0 +1,4 @@
+2025-11-25 13:26:31,536 - currency_file - INFO - Calling get_currencies_file_logged with args=(), kwargs={'currency_codes': ['USD', 'EUR'], 'timeout': 5.0}
+2025-11-25 13:26:31,885 - currency_file - INFO - get_currencies_file_logged returned {'USD': 78.9202, 'EUR': 91.3672}
+2025-11-25 13:26:42,155 - currency_file - INFO - Calling get_currencies_file_logged with args=(), kwargs={'currency_codes': ['USD', 'EUR'], 'timeout': 5.0}
+2025-11-25 13:26:42,489 - currency_file - INFO - get_currencies_file_logged returned {'USD': 78.9202, 'EUR': 91.3672}

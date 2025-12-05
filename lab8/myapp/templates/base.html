@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ app.name }} — {{ app.version }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app-container">
+    <header class="app-header">
+        <div class="app-title">{{ app.name }}</div>
+        <div class="app-meta">
+            версия {{ app.version }},
+            автор: {{ app.author.name }} ({{ app.author.group }})
+        </div>
+
+    </header>
+
+    <nav>
+        {% if navigation %}
+            <ul class="nav-list">
+                {% for item in navigation %}
+                    <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <div class="footer">
+        &copy; {{ app.name }} · {{ author.name }}
+    </div>
+</div>
+</body>
+</html>

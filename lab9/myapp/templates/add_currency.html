@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Добавление валюты</h2>
+
+<div class="section-card">
+    <p class="muted">
+        Введите трёхбуквенный код валюты (например: <b>USD</b>, <b>EUR</b>, <b>CNY</b>, <b>GBP</b>).
+    </p>
+
+    {% if error %}
+        <p style="color: #f87171; margin-top: 10px;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="/currency/add" style="margin-top: 16px;">
+        <label for="code">Код валюты:</label><br>
+        <input
+            type="text"
+            id="code"
+            name="code"
+            maxlength="3"
+            required
+            style="
+                margin-top: 6px;
+                padding: 6px 10px;
+                border-radius: 8px;
+                background: #0f172a;
+                border: 1px solid #1f2937;
+                color: #e5e7eb;
+                width: 180px;
+            "
+        >
+
+        <br><br>
+
+        <button type="submit" class="button-primary">
+            Добавить валюту
+        </button>
+    </form>
+</div>
+
+{% endblock %}
