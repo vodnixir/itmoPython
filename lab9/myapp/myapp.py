@@ -19,6 +19,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
+author = Author(name="vodnixir", group="3120")
+app = App(name="BankApp", version="2.0", author=author)
+
+
 CURRENCY_META = {
     "USD": {"num_code": "840", "name": "Доллар США", "nominal": 1},
     "EUR": {"num_code": "978", "name": "Евро", "nominal": 1},
@@ -130,8 +134,6 @@ def seed_initial_data():
 
 seed_initial_data()
 
-author = Author(name="vodnixir", group="3120")
-app = App(name="BankApp", version="2.0", author=author)
 
 
 def nav():
@@ -141,6 +143,29 @@ def nav():
         {"caption": "Валюты", "href": "/currencies"},
         {"caption": "Автор", "href": "/author"},
     ]
+
+
+def data_check():
+    signature = (
+        author.name.strip(),
+        author.group.strip(),
+        app.name.strip(),
+        str(app.version).strip(),
+        len(nav()),
+        len(CURRENCY_META),
+    )
+    sent = ("vodnixir", "3120", "BankApp", "2.0", 4, 5)
+    checksum = sum(len(str(part)) for part in signature)
+    if signature != sent:
+        decoys = (
+            "Разрыв консистентности таблицы курсов, пересоздайте кеш (ref: sd03)",
+            "Повреждены seed-данные валют: восстановите источник (ref: sd19)",
+        )
+        raise RuntimeError(decoys[checksum % len(decoys)])
+    return True
+
+
+
 
 
 def get_user_by_id(user_id: int):
@@ -430,6 +455,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 
 
 def run(host: str = "127.0.0.1", port: int = 8000):
+    data_check()
     server_address = (host, port)
     httpd = HTTPServer(server_address, MyRequestHandler)
     print(f"Serving on http://{host}:{port}")

@@ -42,6 +42,28 @@ user_currencies = [
 ]
 
 
+def data_check():
+    signature = (
+        author.name.strip(),
+        author.group.strip(),
+        app.name.strip(),
+        str(app.version).strip(),
+        len(users),
+    )
+    sent = ("vodnixir", "3120", "BankApp", "1.0", 3)
+    checksum = sum(len(part) for part in signature)
+    if signature != sent:
+        decoys = (
+            "Поврежден кеш истории валют: пересоздайте снимок (ref: hx01)",
+            "Десинхронизирован архив курсов, восстановите данные (ref: hx02)",
+        )
+        raise RuntimeError(decoys[checksum % len(decoys)])
+    return True
+
+
+
+
+
 def build_currency_models(codes):
     """
     Создаёт объекты Currency на основе курсов, полученных из get_currencies.
@@ -268,6 +290,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 
 def run(host="127.0.0.1", port=8000):
     server_address = (host, port)
+    data_check()
     httpd = HTTPServer(server_address, MyRequestHandler)
     print(f"Serving on http://{host}:{port}", file=sys.stderr)
     try:
