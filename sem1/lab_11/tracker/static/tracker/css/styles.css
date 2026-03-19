@@ -1,0 +1,9 @@
+body {
+    min-height: 100vh;
+}
+
+.card-hover:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transform: translateY(-2px);
+}

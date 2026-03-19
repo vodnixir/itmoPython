@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Пользователи</h2>
+    <a class="btn btn-outline-primary" href="{% url 'dashboard' %}">Мои задачи</a>
+</div>
+<div class="list-group">
+    {% for user in users %}
+    <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="mb-1">{{ user.full_name }}</h6>
+            <small class="text-muted">{{ user.email }}</small>
+        </div>
+        <span class="badge text-bg-secondary">{{ user.tasks.count }} задач(и)</span>
+    </div>
+    {% empty %}
+    <p class="text-muted">Пользователей пока нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}
